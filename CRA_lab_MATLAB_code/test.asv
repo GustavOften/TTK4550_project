@@ -1,0 +1,8 @@
+function matrix_initial_value_problem(A,t_0,T)
+    A_ = matlabFunction(A)
+    n = length(A)
+    f = @(t,x) reshape(A_(t)*x(1:n,1:n),[n*n,1])
+    ode45(f,[0 1],[1;2;3;4])
+    hold on;
+    ode45(@(t,x) [cos(t)*x(1);sin(t)*x(2);cos(t)*x(3);sin(t)*x(4)],[0 1], [1,2,3,4]);
+end
