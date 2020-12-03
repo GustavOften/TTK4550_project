@@ -47,6 +47,9 @@ classdef butterfly_robot_phi_varphi
         ddPhi
         dddPhi
         normal_vector
+        g_fun
+        dg_fun
+        ddg_fun
     end
     methods
         function obj = butterfly_robot_phi_varphi(calculate_riccati)
@@ -72,102 +75,92 @@ classdef butterfly_robot_phi_varphi
             ddk = fnder(k, 2)
             dddk = fnder(k, 3)
             result_spline = @(x)ppval(k,mod(x,2*pi));
-            result_dspline = @(x)ppval(dk,mod(x,2*pi));
-            result_ddspline = @(x)ppval(ddk,mod(x,2*pi));
-            result_dddspline = @(x)ppval(dddk,mod(x,2*pi));
 
             plot(res_fun_g, result_spline(res_fun_g));
-            plot(res_fun_g, result_dspline(res_fun_g));
-            plot(res_fun_g, result_ddspline(res_fun_g));
-            plot(res_fun_g, result_dddspline(res_fun_g));
-            legend("true", "spline", "d_spline", "dd_spline", "ddd_spline");
+            legend("true", "spline");
             grid on;
             obj.Phi = result_spline;
-            obj.dPhi = result_dspline;
-            obj.ddPhi = result_ddspline;
-            obj.dddPhi = result_dddspline;
             
             
-            syms phi(varphi) theta Phi DPhi DDPhi DDDPhi real 
+            syms phi theta varphi
             
-            dpdv = diff(phi(varphi),varphi);
-            ddpdvv = diff(phi(varphi),varphi, varphi);
-            dddpdvvv = diff(phi,varphi,varphi,varphi);
             %% Delta: parametrization of the shape of the frame.
             delta = (obj.a - obj.b*cos(2*phi))*[sin(phi);cos(phi);0];
-            obj.delta = matlabFunction(subs(delta,phi,Phi), 'Vars',[Phi;varphi]);
-            l_delta = obj.a - obj.b*cos(2*phi);
-            l_d_delta = 2*obj.b*sin(2*phi)*diff(phi,varphi);
+            obj.delta = matlabFunction(delta);
             
             %% Tau: 
             tau = (2*obj.b*sin(2*phi)*[sin(phi);cos(phi);0]+(obj.a - obj.b*cos(2*phi))*[cos(phi);-sin(phi);0]) ...
                 /sqrt(sum((2*obj.b*sin(2*phi)*[sin(phi);cos(phi);0]+(obj.a - obj.b*cos(2*phi))*[cos(phi);-sin(phi);0]).^2));
-            obj.tau = matlabFunction(subs(tau, phi,Phi),'Vars',[Phi;varphi]);
+            obj.tau = matlabFunction(tau);
             
             %% Kappa frame:
-            kappa_frame = norm((4*obj.b*cos(2*phi)*[sin(phi);cos(phi);0]+2*obj.b*sin(2*phi)*[cos(phi);-sin(phi);0] + ...
+            kappa_frame = (4*obj.b*cos(2*phi)*[sin(phi);cos(phi);0]+2*obj.b*sin(2*phi)*[cos(phi);-sin(phi);0] + ...
                 2*obj.b*sin(2*phi)*[cos(phi);-sin(phi);0]+(obj.a - obj.b*cos(2*phi))*[-sin(phi);-cos(phi);0])/ ...
-                sum((2*obj.b*sin(2*phi)*[sin(phi);cos(phi);0]+(obj.a - obj.b*cos(2*phi))*[cos(phi);-sin(phi);0]).^2));
-            obj.kappa_frame = matlabFunction(subs(kappa_frame,phi,Phi),'Vars',[Phi;varphi]);
+                sum((2*obj.b*sin(2*phi)*[sin(phi);cos(phi);0]+(obj.a - obj.b*cos(2*phi))*[cos(phi);-sin(phi);0]).^2);
+            obj.kappa_frame = matlabFunction(kappa_frame);
             
             %% varphi = g(phi) 
-            g = subs(atan2([1 0 0]*delta-[0 1 0]*tau,[0 1 0]*delta+[1 0 0]*tau),phi,Phi);
-            dg = diff(g,Phi);
-            ddg = diff(dg,Phi);
+            g = atan2([1 0 0]*delta-obj.R_b*[0 1 0]*tau,[0 1 0]*delta+obj.R_b*[1 0 0]*tau);
+            dg = diff(g,phi);
+            ddg = diff(dg,phi);
+            obj.g_fun = matlabFunction(g);
+            obj.dg_fun = matlabFunction(dg);
+            obj.ddg_fun = matlabFunction(ddg);
             
             %% p and dp 
-            p = 1/(obj.R_b*(-1+obj.R_b*kappa_frame));
-            d_p = diff(p, varphi);
-            obj.p = matlabFunction(subs(p, phi,Phi),'Vars',[Phi;varphi]);
-            obj.d_p = matlabFunction(subs(d_p, {phi,dpdv},{Phi,DPhi}),'Vars',[Phi;DPhi;varphi]);
+            p = 1/(obj.R_b*(1+obj.R_b*norm(kappa_frame)));
+            d_p = diff(p, phi)/dg;
+            obj.p = matlabFunction(p);
+            obj.d_p = matlabFunction(d_p);
             
             %% Rho: Vector to center of ball, given in bodyframe.
-            bad_rho = (obj.a-obj.b*cos(2*phi)+obj.R_b)*[sin(phi);cos(phi);0];
-            obj.bad_rho = matlabFunction(bad_rho);
             rho = delta + obj.R_b*[[0 -1 0]*tau;[1 0 0]*tau;0];
-            obj.normal_vector = matlabFunction(subs([[0 -1 0]*tau;[1 0 0]*tau;0],phi,Phi),'Vars',[Phi;varphi]);
-            obj.rho = matlabFunction(subs(rho, phi,Phi),'Vars',[Phi;varphi]);
-            obj.length_rho = matlabFunction(subs(norm(rho),phi,Phi),'Vars',[Phi;varphi]);
+            obj.normal_vector = matlabFunction([[0 -1 0]*tau;[1 0 0]*tau;0]);
+            obj.rho = matlabFunction(rho);
+            obj.length_rho = matlabFunction(norm(rho));
             
             %% s: Arclength of the balls path.
-            ds = norm(diff(rho,varphi));
-            dds = diff(ds, varphi);
-            obj.ds = matlabFunction(subs(ds, {phi,dpdv,ddpdvv},{Phi,DPhi,DDPhi}),'Vars',[Phi;DPhi;DDPhi;varphi]);
-            obj.dds = matlabFunction(subs(dds, {phi,dpdv,ddpdvv},{Phi,DPhi,DDPhi}),'Vars',[Phi;DPhi;DDPhi;varphi]);
+            ds = norm(diff(rho,phi))/dg;
+            dds = diff(rho,phi)'*diff(rho,phi,phi)/norm(diff(rho,phi))/dg^2-norm(diff(rho,phi))*ddg/dg^3;
+            obj.ds = matlabFunction(ds);
+            obj.dds = matlabFunction(dds);
 
             %% Kappa: Curvature of curve.
-            kappa = diff(rho,varphi,varphi)/sum(diff(rho,varphi).^2);
-            obj.kappa = matlabFunction(subs(kappa, {phi,dpdv,ddpdvv, dddpdvvv},{Phi,DPhi,DDPhi,DDDPhi}),'Vars',[Phi;DPhi;DDPhi;DDDPhi;varphi]);
+            kappa = diff(rho,phi,phi)/dg^2/ds^2;%kappa_frame/(1-obj.R_b*norm(kappa_frame));
+            obj.kappa = matlabFunction(kappa);
 
             %% Rotational matrices:
             obj.R = matlabFunction([cos(theta) -sin(theta) 0;sin(theta) cos(theta) 0;0 0 1]);
             obj.diff_R = matlabFunction([-sin(theta) -cos(theta) 0;cos(theta) -sin(theta) 0;0 0 0]);
             
             %% Control stuff
-            Rtau = obj.R(varphi)*obj.tau(varphi)
+            Rtau = obj.R(varphi)*obj.tau(varphi);
             %% Theta used in Case-study non-prehensile %%%%%%%
             a = -0.03;
             numerator = a*sin(2*varphi-pi)*[1 0 0]*Rtau-[0 1 0]*Rtau;
             denominator = a*sin(2*varphi-pi)*[0 1 0]*Rtau+[1 0 0]*Rtau;
             %Theta = varphi - 0.49*sin(2*varphi)
-            Theta = varphi+atan(numerator/denominator)
-            dTheta = diff(Theta,varphi)
-            ddTheta = diff(dTheta,varphi)
+            %dTheta = 1 - 0.98*cos(2*varphi);
+            %ddTheta = 2*0.98*sin(2*varphi);
+            
+            Theta = varphi+atan(numerator/denominator);
+            dTheta = diff(Theta,varphi);
+            ddTheta = diff(dTheta,varphi);
             %% Theta used in Internship report
             %Theta = phi-1.3*sin(2*phi);
             %Theta = phi-0.2*sin(Rtau(1));
-            obj.theta = matlabFunction(subs(Theta, phi,Phi),'Vars',[Phi;varphi]);
-            obj.d_theta = matlabFunction(subs(dTheta, {phi,dpdv},{Phi,DPhi}),'Vars',[Phi;DPhi;varphi]);
-            obj.dd_theta = matlabFunction(subs(ddTheta, {phi,dpdv,ddpdvv},{Phi,DPhi,DDPhi}),'Vars',[Phi;DPhi;DDPhi;varphi]);
+            obj.theta = matlabFunction(Theta);
+            obj.d_theta = matlabFunction(dTheta);
+            obj.dd_theta = matlabFunction(ddTheta);
 
             %% Plots phase plane of alpha betta gamma function
              a = @(x) obj.alpha_beta_gamma(x);
              f_plane = @(t,x) [x(2);-1/(a(x(1))'*[1;0;0])*((a(x(1))'*[0;1;0])*x(2)^2+a(x(1))'*[0;0;1])];
-%             phase_plot_2_interactive(f_plane,[0 6*pi;-1 10],10,'',[100,100],0.1)
+             phase_plot_2_interactive(f_plane,[0 6*pi;-1 10],10,'',[100,100],0.1)
             %% Finding solution to periodic Riccati equation
             if calculate_riccati
                 options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8);
-                [ts,ys] = ode45(f_plane,[0,10],[0;1], options);
+                [ts,ys] = ode45(f_plane,[0,10],[0;2.2], options);
                 i = 1;
                 phi_dot = [0 0];
                 length(ys)
@@ -185,8 +178,8 @@ classdef butterfly_robot_phi_varphi
                 % Using the curvfitted function since ode45 has problems with
                 % interpolations.
                 [A, B] = obj.get_linearization(phi, obj.function_for_dphi,true)          
-                obj.A = @(phi) A(phi)
-                obj.B = @(phi) B(phi)
+                obj.A = @(phi) A(phi);
+                obj.B = @(phi) B(phi);
                 A(0)
                 B(0)
                 [X,phi] = sdp_riccati(obj.A,obj.B,obj.Q,obj.Gamma,0,pi,700,7,3);
@@ -212,44 +205,43 @@ classdef butterfly_robot_phi_varphi
         end
         
         function delta = get_delta(obj, varphi)
-            delta = obj.delta(obj.Phi(varphi),varphi);
+            delta = obj.delta(obj.Phi(varphi));
         end
         function tau = get_tau(obj,varphi)
-            tau = obj.tau(obj.Phi(varphi),obj.dPhi(varphi),varphi);
+            tau = obj.tau(obj.Phi(varphi));
         end
         function normal_vector = get_normal_vector(obj,varphi)
-            normal_vector = obj.normal_vector(obj.Phi(varphi),obj.dPhi(varphi),varphi);
+            normal_vector = obj.normal_vector(obj.Phi(varphi));
         end
         function rho = get_rho(obj, varphi)
-           rho = obj.rho(obj.Phi(varphi),obj.dPhi(varphi), varphi);
+           rho = obj.rho(obj.Phi(varphi));
         end
         function l_rho = get_l_rho(obj, varphi)
-            l_rho = obj.length_rho(obj.Phi(varphi), obj.dPhi(varphi),varphi);
+            l_rho = obj.length_rho(obj.Phi(varphi));
         end
         function kappa = get_kappa(obj, varphi)
-            kappa = obj.kappa(obj.Phi(varphi), obj.dPhi(varphi), obj.ddPhi(varphi), ...
-                obj.dddPhi(varphi), varphi);
+            kappa = obj.kappa(obj.Phi(varphi));
         end
         function ds = get_ds(obj, varphi)
-            ds = obj.ds(obj.Phi(varphi), obj.dPhi(varphi), obj.ddPhi(varphi),varphi);
+            ds = obj.ds(obj.Phi(varphi));
         end
         function dds = get_dds(obj, varphi)
-            dds = obj.dds(obj.Phi(varphi), obj.dPhi(varphi), obj.ddPhi(varphi),varphi);
+            dds = obj.dds(obj.Phi(varphi));
         end
         function p = get_p(obj, varphi)
-            p = obj.p(obj.Phi(varphi), varphi);
+            p = obj.p(obj.Phi(varphi));
         end
         function dp = get_dp(obj, varphi)
-            dp = obj.d_p(obj.Phi(varphi), obj.dPhi(varphi), varphi);
+            dp = obj.d_p(obj.Phi(varphi));
         end
         function theta = get_theta(obj, varphi)
-            theta = obj.theta(obj.Phi(varphi),varphi);
+            theta = obj.theta(obj.Phi(varphi));
         end
         function d_theta = get_dtheta(obj, varphi)
-            d_theta = obj.d_theta(obj.Phi(varphi),obj.dPhi(varphi),varphi);
+            d_theta = obj.d_theta(obj.Phi(varphi));
         end
         function dd_theta = get_ddtheta(obj, varphi)
-            dd_theta = obj.dd_theta(obj.Phi(varphi), obj.dPhi(varphi), obj.ddPhi(varphi),varphi);
+            dd_theta = obj.dd_theta(obj.Phi(varphi));
         end
         
         function M = get_M(obj, q)
@@ -277,7 +269,7 @@ classdef butterfly_robot_phi_varphi
             c21 = -obj.m_b*obj.get_ds(varphi)*taudotrho*dq(1);
             
             c22 = obj.m_b*(1+obj.J_s/obj.m_b*obj.get_p(varphi)^2)*obj.get_ds(varphi)*obj.get_dds(varphi)*dq(2) + ...
-                obj.get_ds(varphi)*obj.J_s*obj.get_p(varphi)*obj.get_dp(varphi);
+                obj.get_ds(varphi)*obj.J_s*obj.get_p(varphi)*obj.get_dp(varphi)*dq(2);
             
             C = [c11 c12;
                  c21 c22];
@@ -301,7 +293,7 @@ classdef butterfly_robot_phi_varphi
             set(groot, 'defaultLegendInterpreter','latex');
             figure 
             k = linspace(0,pi,100);
-            constraint_eq_1 = obj.get_ds(0)*(1+obj.J_s/obj.m_b*obj.p(0)^2)/([0 0 1]*cross(obj.rho(0),obj.get_tau(0))+obj.J_s/obj.m_b*obj.get_p(0));
+            constraint_eq_1 = obj.get_ds(0)*(1+obj.J_s/obj.m_b*obj.get_p(0)^2)/([0 0 1]*cross(obj.get_rho(0),obj.get_tau(0))+obj.J_s/obj.m_b*obj.get_p(0));
             constraint_eq_2 = obj.get_ds(pi/2)*(1+obj.J_s/obj.m_b*obj.get_p(pi/2)^2)/([0 0 1]*cross(obj.get_rho(pi/2),obj.get_tau(pi/2))+obj.J_s/obj.m_b*obj.get_p(pi/2));
             not_eq_constraint = @(x) -obj.get_ds(x)*(1+obj.J_s/obj.m_b*obj.get_p(x)^2)/([0 0 1]*cross(obj.get_rho(x),obj.get_tau(x))+obj.J_s/obj.m_b*obj.get_p(x));
             %constraint_eq_1 = obj.ds(0)*(1+obj.J_s/obj.m_b/obj.R_b^2)/([0 0 1]*cross(obj.rho(0),obj.tau(0))-obj.J_s/obj.m_b/obj.R_b);
