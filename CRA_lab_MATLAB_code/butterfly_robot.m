@@ -106,7 +106,9 @@ classdef butterfly_robot
             a = -0.03;
             numerator = a*sin(2*phi-pi)*Rtau(1)-Rtau(2)
             denominator = a*sin(2*phi-pi)*Rtau(2)+Rtau(1)
-            Theta = simplify(phi+atan(numerator/denominator))
+            %Theta = simplify(phi+atan(numerator/denominator))
+            a= -1.007046e+00; b= 6.398405e-01; c= 2.507379e-01; d= 1.164677e-01;
+            Theta = a*atan(b*sin(2*varphi)+c*sin(4*varphi)+d*sin(6*varphi))+varphi;
             dTheta = simplify(diff(Theta,varphi))
             ddTheta = simplify(diff(dTheta,varphi))
             %% Theta used in Internship report
@@ -119,11 +121,11 @@ classdef butterfly_robot
             %% Plots phase plane of alpha betta gamma function
             a = @(x) obj.alpha_beta_gamma(x);
             f_plane = @(t,x) [x(2);-1/(a(x(1))'*[1;0;0])*((a(x(1))'*[0;1;0])*x(2)^2+a(x(1))'*[0;0;1])];
-            phase_plot_2_interactive(f_plane,[0 6*pi;-1 10],10,'',[100,100],0.1)
+            %phase_plot_2_interactive(f_plane,[-pi pi;-1 3],10,'',[100,100],0.1)
             %% Finding solution to periodic Riccati equation
             if calculate_riccati
                 options = odeset('RelTol', 1e-10, 'AbsTol', 1e-10);
-                [ts,ys] = ode45(f_plane,[0,10],[0;1.9], options);
+                [ts,ys] = ode45(f_plane,[0,10],[0;1.5], options);
                 i = 1;
                 phi_dot = [0 0];
                 length(ys)

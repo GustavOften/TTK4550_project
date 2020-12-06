@@ -1,10 +1,11 @@
 function [X,time] = sdp_riccati(A,B,Q,R,t_0,T,N,M,n)
-    d = 10e10;
+    d = 100000;
     omega = 2*pi/T;
     time_step = T/N;
     F_zero = sdpvar(n,n,'symmetric','real');
     F_complex = sdpvar(n,n,M,'symmetric','complex');
     constraints = [];
+    max_norm_H = 0;
     for i = 1:N
         H = F_zero;
         H_dot = 0;
@@ -17,16 +18,20 @@ function [X,time] = sdp_riccati(A,B,Q,R,t_0,T,N,M,n)
         end
         L = [H_dot+H*A(t)+A(t)'*H+Q(t) H*B(t);
              B(t)'*H R];
-        constraints = [constraints,L >= 0,-d*eye(n) <= H <= d*eye(n)];
+        constraints = [constraints, L >= 0];
+        constraints = [constraints, -d*eye(3) <= H <= d*eye(3)];
     end
-    options = sdpsettings('solver','sdpt3','debug',1);
-    objective = T*trace(F_zero);
-    sol = optimize(constraints,-objective,options);
+    options = sdpsettings('solver','sdpt3','sdpt3.maxit',500,'debug',1);
+    %ptions.sdpt3.maxit = 500;
+    objective = trace(F_zero);
+    sol = optimize(constraints,-objective);
     if sol.problem == 0
             % Extract and display value
             F_0 = value(F_zero);
             complex_sol = value(F_complex);
     else
+            F_0 = value(F_zero);
+            complex_sol = value(F_complex);
             fprintf('Hmm, something went wrong!');
             sol.info
             yalmiperror(sol.problem)
