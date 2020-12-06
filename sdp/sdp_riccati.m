@@ -1,5 +1,5 @@
 function [X,time] = sdp_riccati(A,B,Q,R,t_0,T,N,M,n)
-    d = 100000;
+    d = 10e10;
     omega = 2*pi/T;
     time_step = T/N;
     F_zero = sdpvar(n,n,'symmetric','real');
