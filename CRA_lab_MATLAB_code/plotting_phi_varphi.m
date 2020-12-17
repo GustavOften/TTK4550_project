@@ -3,14 +3,14 @@ set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 n = 3;
 
-phi = linspace(0,2*pi,1000);
+phi = linspace(0,pi,1000);
 X = zeros(3,3,length(phi));
 for i = 1:length(phi)
-    X(:,:,i) = bf.function_for_X(mod(phi(i),pi));
+    X(:,:,i) = bf.function_for_X_positive_dphi(mod(phi(i),pi));
 end
 not_positive = [];
 for i = 1:length(bf.X(:,:,:))
-    d = eig(bf.X(:,:,i))
+    d = eig(bf.X(:,:,i));
     if all(d >= 0)
     else
         fprintf("X %d not positive semi definite ", i)
@@ -18,10 +18,9 @@ for i = 1:length(bf.X(:,:,:))
     end
 end
 
-
 figure
 k = 1;
-phi = linspace(0,2*pi,1000);
+phi = linspace(0,pi,1000);
 X = zeros(3,3,length(phi));
 for i = 1:length(phi)
     X(:,:,i) = bf.function_for_X(mod(phi(i),pi));
@@ -83,8 +82,6 @@ for i = 1:length(phi)
     kappa(:,1,i) = bf.get_kappa(phi(i));
 %    u(i) = bf.get_u([bf.theta(phi(i));phi(i)],[bf.diff_theta(phi(i))*bf.function_for_dphi(phi(i));bf.function_for_dphi(phi(i))],[0;0;0;0]);
  %   my_u(i) = bf.get_my_u([bf.theta(phi(i));phi(i)],[bf.diff_theta(phi(i))*bf.function_for_dphi(phi(i));bf.function_for_dphi(phi(i))],[0;0;0;0]);
-    p(i) = bf.get_p(phi(i));
-    dp(i) = bf.get_dp(phi(i));
     normal_vector(:,1,i) = bf.get_normal_vector(phi(i));
 end
 figure
@@ -137,10 +134,11 @@ for i = 1:3
     subplot(3,1,i)
     hold on;
     plot(phi,reshape(abg(i,1,:),1,length(phi)));
+    set(gca,'XTick',0:pi/4:2*pi) 
+    set(gca,'XTickLabel',{'$0$','$\frac{\pi}{4}$','$\frac{\pi}{2}$','$\frac{3\pi}{4}$','$\pi$','$\frac{5\pi}{4}$','$\frac{3\pi}{2}$','$\frac{7\pi}{4}$','$2\pi$'})
     k = k+1;
 end
-set(gca,'XTick',0:pi/2:2*pi) 
-set(gca,'XTickLabel',{'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+
 grid on
 sgtitle('$\alpha, \beta, \gamma$ of $\phi$', 'Interpreter','latex');
 
@@ -208,8 +206,8 @@ for i = 1:3
         hold on;
         plot(reshape(bf.X(i,j,:),1,length(bf.X)));
         k = k+1;
-        set(gca,'XTick',0:pi/2:2*pi)    
-        set(gca,'XTickLabel',{'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+        %set(gca,'XTick',0:pi/2:2*pi)    
+        %set(gca,'XTickLabel',{'0','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
         grid on;
     end
 end

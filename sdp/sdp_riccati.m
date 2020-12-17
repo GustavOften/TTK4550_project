@@ -1,4 +1,5 @@
 function [X,time] = sdp_riccati(A,B,Q,R,t_0,T,N,M,n)
+    T+t_0
     d = 100000;
     omega = 2*pi/T;
     time_step = T/N;
@@ -45,6 +46,7 @@ function [X,time] = sdp_riccati(A,B,Q,R,t_0,T,N,M,n)
             X(:,:,i) = X(:,:,i) + exp(-1i*j*omega*t)*conj(complex_sol(:,:,j));
         end
     end
-    time = linspace(t_0,T,N);
+    T+t_0
+    time = linspace(t_0,T+t_0,N);
 end
 

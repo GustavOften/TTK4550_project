@@ -1,4 +1,4 @@
-classdef butterfly_robot_phi_varphi
+classdef butterfly_robot_center
     %Differential equation:
     %M(q)dot_dot_q + C(q, dot_q)dot_q + G(q) = [u;0]
     properties
@@ -29,19 +29,32 @@ classdef butterfly_robot_phi_varphi
         kappa
         R
         diff_R
-        tau_diff 
+        tau_diff
         theta
         d_theta
         dd_theta
+        theta_up
+        d_theta_up
+        dd_theta_up
+        theta_center
+        d_theta_center
+        dd_theta_center
         K
-        function_for_X
+        function_for_X_up
+        function_for_X_positive_dphi
+        function_for_X_negative_dphi
         function_for_dphi
+        function_for_dphi_up
+        function_for_positive_dphi
         Gamma = 1
         Q = @(t)[20 0 0;0 20 0;0 0 20];
+        Q_center = @(t)[20 0 0;0 20 0;0 0 20];
         X
         phi_test
         A
         B
+        B_up
+        B_positive_dphi
         Phi
         dPhi
         ddPhi
@@ -51,10 +64,9 @@ classdef butterfly_robot_phi_varphi
         dg_fun
         ddg_fun
         drho_test 
-        ys
     end
     methods
-        function obj = butterfly_robot_phi_varphi(calculate_riccati)
+        function obj = butterfly_robot_center(calculate_riccati)
             %% phi = f(varphi), varphi = g(varphi) 
             delta_curve_fit = @(phi)(obj.a - obj.b*cos(2*phi))*[sin(phi);cos(phi);0];
             tau_curve_fit = @(phi)(2*obj.b*sin(2*phi)*[sin(phi);cos(phi);0]+(obj.a - obj.b*cos(2*phi))*[cos(phi);-sin(phi);0]) ...
@@ -63,8 +75,7 @@ classdef butterfly_robot_phi_varphi
             range_for_functions = linspace(0,2*pi,500);
             function_g = @(x) atan2([1 0 0]*delta_curve_fit(x) - obj.R_b*[0 1 0]*tau_curve_fit(x), ...
                                 [0 1 0]*delta_curve_fit(x)+obj.R_b*[1 0 0]*tau_curve_fit(x));
-            res_fun_g = zeros(length(range_for_functions),1);
-            res_fun_dg = zeros(length(range_for_functions),1);
+            res_fun_f = zeros(length(range_for_functions),1);
             for i = 1:length(range_for_functions)
                 res_fun_g(i) = function_g(range_for_functions(i));
             end
@@ -75,13 +86,12 @@ classdef butterfly_robot_phi_varphi
             
             k = spline(res_fun_g,range_for_functions);
             result_spline = @(x)ppval(k,mod(x,2*pi));
-            subplot(1,2,1)
-            plot(res_fun_g,result_spline(res_fun_g));
-            
-            legend("true", "spline");
+
+            %plot(res_fun_g,result_spline(res_fun_g));
+            legend("", "spline");
             grid on;
             obj.Phi = result_spline;
-          
+
             syms phi theta varphi
             
             %% Delta: parametrization of the shape of the frame.
@@ -139,77 +149,24 @@ classdef butterfly_robot_phi_varphi
             %New variables to differentiate Theta(\varphi, \phi(\varphi)) with respect to \varphi
             syms varphi
             
-            %% Theta used in Case-study non-prehensile %%%%%%%
-            
-%             R = [cos(varphi) -sin(varphi) 0;sin(varphi) cos(varphi) 0;0 0 1];
-%             tau_theta = ((-2*obj.b*sin(2*varphi))*[sin(varphi);cos(varphi);0]+(obj.a - obj.b*cos(2*varphi))*[cos(varphi);-sin(varphi);0])/ ...
-%                 norm((-2*obj.b*sin(2*varphi))*[sin(varphi);cos(varphi);0]+(obj.a - obj.b*cos(2*varphi))*[cos(varphi);-sin(varphi);0]);
-%             Rtau = R*tau_theta;
-%             a = 0.03;
-%             numerator = a*sin(2*varphi)*[1 0 0]*Rtau -[0 1 0]*Rtau;
-%             denominator = a*sin(2*varphi)*[0 1 0]*Rtau +[1 0 0]*Rtau;
-%             Theta = varphi+atan(numerator/denominator);
-%             dTheta = diff(Theta,varphi);
-%             ddTheta = diff(dTheta,varphi);
-            %% Denne er ganske god. IKke fjern den!
-            %% works with phi_dot_zero = 2.6
-            %a= 3.646053e+00; b= -1.373081e-01; c= -3.280457e-02; d= -5.262885e-03;
-            %% ##########################################
-            %% Also good.
-            %a= -3.219353e+00; b= 1.838894e-01; c= 4.369538e-02; d= 3.738777e-03;
-            %%
-            %% PRETTY GOOD, center in pi/2.
-            a= -8.696967e-01; b= 8.285338e-01; c= 2.104423e-01; d= 7.803824e-02; e= 4.994753e-02; f= 2.044127e-02;
-            %%%
-            %a= -1.058798e+01; b= 5.721937e-02; c= 1.156266e-02; d= 4.636083e-03; e= 1.862895e-03; f= 7.562149e-04;
-            %a= -7.479424e-01; b= 9.567741e-01; c= 3.023719e-01; d= 2.335561e-02; e= 2.090285e-02; f= 1.754860e-02;
-            %% Pretty good. varphi_dot_zero = 0.89;
-            a= -8.017198e-01; b= 8.326337e-01; c= 2.178205e-01; d= 9.341089e-02; e= 2.924495e-02; f= -4.505087e-03;
-            
-            
-            a= -6.362650e-01; b= 1.283998e+00; c= 3.471409e-01; d= 5.587734e-02; e= 4.910347e-03;
-            a= -6.361089e-01; b= 1.284578e+00; c= 3.473617e-01; d= 5.586551e-02; e= 4.882655e-03;
-            %% Denne kan gå veldig sakte. varphi_dot_zero = 0.224;
-            a= -6.012854e-01; b= 1.415366e+00; c= 3.964811e-01; d= 5.645448e-02; e= 2.783807e-03;
+            a_up= -6.012854e-01; b_up= 1.415366e+00; c_up= 3.964811e-01; d_up= 5.645448e-02; e_up= 2.783807e-03;
+            Theta_up = a_up*atan(b_up*sin(2*varphi)+c_up*sin(4*varphi)+d_up*sin(6*varphi)+e_up*sin(8*varphi))+varphi;
+            dTheta_up = diff(Theta_up,varphi);
+            ddTheta_up = diff(Theta_up,varphi,varphi);
+            obj.theta_up = matlabFunction(Theta_up);
+            obj.d_theta_up = matlabFunction(dTheta_up);
+            obj.dd_theta_up = matlabFunction(ddTheta_up);
+            obj.theta = matlabFunction(Theta_up);
+            obj.d_theta = matlabFunction(dTheta_up);
+            obj.dd_theta = matlabFunction(ddTheta_up);
 
-            %% This was used for fast moving perpetual, dot_varphi = 1.17;
-            a= -6.023940e+01; b= 9.115470e-03; c= 1.941337e-03; d= 1.731620e-03; e= 7.253528e-04;
-            
-            %% This was used for center in pi/2 a= -2.816689e+00; b= 1.850450e-01; c= -9.372952e-03; d= -3.295735e-02; e= -1.621506e-02;
-            
-            Theta = a*atan(b*sin(2*varphi)+c*sin(4*varphi)+d*sin(6*varphi)+e*sin(8*varphi))+varphi;
-            %a=-3.201623e-01;
-            %Theta = a*sin(2*varphi)+varphi;
-            %a= -6.073674e-01; b= -1.083216e-01; c= -5.987843e-02; d= -5.190061e-02; e= 2.158077e-02;
-            %Theta = a*sin(2*varphi)+b*sin(4*varphi)+c*sin(6*varphi)+d*sin(8*varphi)+e*sin(10*varphi)+varphi;
-            %Theta = varphi -0.49*sin(2*varphi);
-            %Theta = varphi -1.5076*sin(2*varphi)-0.0063*sin(4*varphi);
-            dTheta = diff(Theta,varphi);%-0.2*cos(2*varphi)/(sin(2*varphi)^2+1)+1;
-            ddTheta = diff(Theta,varphi,varphi);%0.4*cos(2*varphi)/(cos(2*varphi)^2+1)+0.8*sin(2*varphi)^2*cos(2*varphi)/(cos(2*varphi)^2+1)^2;
-            %% Theta used in Internship report
-            %Theta = phi-1.3*sin(2*phi);
-            %Theta = phi-0.2*sin(Rtau(1));
-            obj.theta = matlabFunction(Theta);
-            obj.d_theta = matlabFunction(dTheta);
-            obj.dd_theta = matlabFunction(ddTheta);
-% 
-%             %% Plots phase plane of alpha betta gamma function
             a = @(x) obj.alpha_beta_gamma(x);
-            figure
-            k = linspace(0,pi, 400);
-            linear_term = @(x) -obj.get_dgamma(x(1))/([1 0 0]*a(x(1)));
-            res = zeros(400,1);
-            for i = 1:400
-               res(i) = linear_term(k(i));%[0 0 1]*a(k(i))/([1 0 0]*a(k(i))); 
-            end
-            plot(k,res);
             f_plane = @(t,x) [x(2);-1/(a(x(1))'*[1;0;0])*((a(x(1))'*[0;1;0])*x(2)^2+a(x(1))'*[0;0;1])];
-            %f_plane = @(t,x) [x(2);-obj.get_dgamma(0)/([1 0 0]*a(0))*x(1)];
-            %phase_plot_2_interactive(f_plane,[0 pi;-2 2],10,'',[10,10],0.1)
-            %% Finding solution to periodic Riccati equation
+            
+            % Finding solution to periodic Riccati equation
             if calculate_riccati
                 options = odeset('RelTol', 1e-10, 'AbsTol', 1e-10);
-                [ts,ys] = ode45(f_plane,[0,10],[0;1.17], options);
+                [ts,ys] = ode45(f_plane,[0,30],[0;0.224], options);
                 i = 1;
                 phi_dot = [0 0];
                 length(ys)
@@ -223,14 +180,15 @@ classdef butterfly_robot_phi_varphi
                 phi_dot(i,:) = ys(i,:);
                 %% Interpolated 
                 interpolation_for_dphi = @(x) interp1(phi_dot(:,1),phi_dot(:,2), x);
-                obj.function_for_dphi = @(phi) interpolation_for_dphi(mod(phi,pi));
+                obj.function_for_dphi_up = @(phi) interpolation_for_dphi(mod(phi,pi));
                 % Using the curvfitted function since ode45 has problems with
                 % interpolations.
                 figure()
                 plot(ys(:,1),ys(:,2))
-                [A, B] = obj.get_linearization(phi, obj.function_for_dphi,true);          
+                [A, B] = obj.get_linearization(phi, obj.function_for_dphi_up,true);          
                 obj.A = @(phi) A(phi);
                 obj.B = @(phi) B(phi);
+                obj.B_up = @(phi) B(phi);
                 [X,phi] = sdp_riccati(obj.A,obj.B,obj.Q,obj.Gamma,0,pi,100,40,3);
                 obj.X = X;
                 obj.phi_test = phi;
@@ -238,7 +196,79 @@ classdef butterfly_robot_phi_varphi
                 interpolation_for_X = @(x)[interp1(phi,reshape(X(1,1,:),1,length(X)),x) interp1(phi,reshape(X(1,2,:),1,length(X)),x) interp1(phi,reshape(X(1,3,:),1,length(X)),x);
                                           interp1(phi,reshape(X(2,1,:),1,length(X)),x) interp1(phi,reshape(X(2,2,:),1,length(X)),x) interp1(phi,reshape(X(2,3,:),1,length(X)),x);
                                           interp1(phi,reshape(X(3,1,:),1,length(X)),x) interp1(phi,reshape(X(3,2,:),1,length(X)),x) interp1(phi,reshape(X(3,3,:),1,length(X)),x);];
-                obj.function_for_X = @(x) interpolation_for_X(mod(x,pi));
+                obj.function_for_X_up = @(x) interpolation_for_X(mod(x,pi));
+            end
+            %% Center in pi/2
+            a_c= -2.816689e+00; b_c= 1.850450e-01; c_c= -9.372952e-03; d_c= -3.295735e-02; e_c= -1.621506e-02;
+            Theta_center = a_c*atan(b_c*sin(2*varphi)+c_c*sin(4*varphi)+d_c*sin(6*varphi)+e_c*sin(8*varphi))+varphi;
+            dTheta_center = diff(Theta_center,varphi);
+            ddTheta_center = diff(Theta_center,varphi,varphi);
+            obj.theta_center = matlabFunction(Theta_center);
+            obj.d_theta_center = matlabFunction(dTheta_center);
+            obj.dd_theta_center = matlabFunction(ddTheta_center);
+            obj.theta = matlabFunction(Theta_center);
+            obj.d_theta = matlabFunction(dTheta_center);
+            obj.dd_theta = matlabFunction(ddTheta_center);
+            a = @(x) obj.alpha_beta_gamma(x);
+            f_plane = @(t,x) [x(2);-1/(a(x(1))'*[1;0;0])*((a(x(1))'*[0;1;0])*x(2)^2+a(x(1))'*[0;0;1])];
+            
+            if calculate_riccati
+                syms phi
+                options = odeset('RelTol', 1e-10, 'AbsTol', 1e-10);
+                [ts,ys] = ode45(f_plane,[0,10],[pi/2;0.75], options);
+                plot(ys(:,1),ys(:,2))
+                positive = [];
+                negative = [];
+                last_half_positive = [];
+                first_half_positive = [];
+                i = 1;
+                while ys(i,2) > 0 
+                    last_half_positive = [last_half_positive;ys(i,:)];
+                    i = i+1;
+                end
+                while ys(i,2) < 0 
+                    negative = [negative;ys(i,:)];
+                    i = i+1;
+                end
+                while ys(i,1) < pi/2
+                    first_half_positive = [first_half_positive; ys(i,:)];
+                     i = i+1;
+                end
+                positive = [first_half_positive;last_half_positive];
+                positive = [0 positive(1,2);positive;pi positive(end,2)]
+                %% Interpolated 
+                interpolation_for_dphi_pos = @(x) interp1(positive(:,1),positive(:,2), x);
+                obj.function_for_positive_dphi = @(x) interpolation_for_dphi_pos(mod(x,pi));
+                interpolation_for_dphi_neg = @(x) interp1(negative(:,1),negative(:,2), x);
+                %obj.function_for_negative_dphi = @(x) interpolation_for_dphi_neg(mod(x,pi));
+                [A, B] = obj.get_linearization(phi, obj.function_for_positive_dphi,true);          
+                obj.A = @(phi) A(phi);
+                obj.B = @(phi) B(phi);
+                obj.B_positive_dphi = @(phi) B(phi);
+                obj.A(positive(1,1))
+                obj.A(pi/2)
+                [X_,phi] = sdp_riccati(obj.A,obj.B,obj.Q_center,obj.Gamma,positive(2,1),positive(end-1,1)-positive(2,1),100,40,3);
+                phi = [0 phi pi];
+                phi;
+                X = zeros(3,3,length(X_)+2);
+                X(:,:,1) = X_(:,:,1);
+                for i =2:length(X_)+1
+                    X(:,:,i) = X_(:,:,i-1);
+                end
+                X(:,:,end) = X_(:,:,end);
+                X_negative = zeros(3,3,length(X));
+                for i = 1:length(X)
+                    X_negative(:,:,i) = X(:,:,end+1-i);
+                end
+                %% Interpolation for Riccati solution
+                interpolation_for_X = @(x)[interp1(phi,reshape(X(1,1,:),1,length(X)),x) interp1(phi,reshape(X(1,2,:),1,length(X)),x) interp1(phi,reshape(X(1,3,:),1,length(X)),x);
+                                          interp1(phi,reshape(X(2,1,:),1,length(X)),x) interp1(phi,reshape(X(2,2,:),1,length(X)),x) interp1(phi,reshape(X(2,3,:),1,length(X)),x);
+                                          interp1(phi,reshape(X(3,1,:),1,length(X)),x) interp1(phi,reshape(X(3,2,:),1,length(X)),x) interp1(phi,reshape(X(3,3,:),1,length(X)),x);];
+                interpolation_for_X_negative = @(x)[interp1(phi,reshape(X_negative(1,1,:),1,length(X_negative)),x) interp1(phi,reshape(X_negative(1,2,:),1,length(X_negative)),x) interp1(phi,reshape(X_negative(1,3,:),1,length(X_negative)),x);
+                                          interp1(phi,reshape(X_negative(2,1,:),1,length(X_negative)),x) interp1(phi,reshape(X_negative(2,2,:),1,length(X_negative)),x) interp1(phi,reshape(X_negative(2,3,:),1,length(X_negative)),x);
+                                          interp1(phi,reshape(X_negative(3,1,:),1,length(X_negative)),x) interp1(phi,reshape(X_negative(3,2,:),1,length(X_negative)),x) interp1(phi,reshape(X_negative(3,3,:),1,length(X_negative)),x);];
+                obj.function_for_X_positive_dphi = @(x) interpolation_for_X(mod(x,pi));
+                obj.function_for_X_negative_dphi = @(x) interpolation_for_X_negative(mod(x,pi));
             end
         end
         
@@ -281,6 +311,27 @@ classdef butterfly_robot_phi_varphi
         function dd_theta = get_ddtheta(obj, varphi)
             dd_theta = obj.dd_theta(varphi);
         end
+        %% For three regualtors::
+        function theta = get_theta_up(obj, varphi)
+            theta = obj.theta_up(varphi);
+        end
+        function d_theta = get_dtheta_up(obj, varphi)
+            d_theta = obj.d_theta_up(varphi);
+        end
+        function dd_theta = get_ddtheta_up(obj, varphi)
+            dd_theta = obj.dd_theta_up(varphi);
+        end
+        %%
+        function theta = get_theta_center(obj, varphi)
+            theta = obj.theta_center(varphi);
+        end
+        function d_theta = get_dtheta_center(obj, varphi)
+            d_theta = obj.d_theta_center(varphi);
+        end
+        function dd_theta = get_ddtheta_center(obj, varphi)
+            dd_theta = obj.dd_theta_center(varphi);
+        end
+        %%
         function d_alpha = get_dalpha(obj,varphi)
             rxt = [0 0 1]*cross(obj.get_rho(varphi),obj.get_tau(varphi));
             rxk = [0 0 1]*cross(obj.get_rho(varphi),obj.get_kappa(varphi));
@@ -294,8 +345,8 @@ classdef butterfly_robot_phi_varphi
         end
         function energy = get_energy(obj, q, dq)
             v_b = obj.diff_R(q(1))*dq(1)*obj.get_rho(q(2))...
-                +obj.R(q(1))*obj.get_tau(q(2))*obj.get_ds(q(2))*dq(2)
-            omega_b = [0;0;dq(1)-obj.get_dsf(q(2))/obj.R_b*dq(2)]
+                +obj.R(q(1))*obj.get_tau(q(2))*obj.get_ds(q(2))*dq(2);
+            omega_b = [0;0;dq(1)-obj.get_dsf(q(2))/obj.R_b*dq(2)];
             omega_frame = dq(1);
             kinetic = 1/2*obj.m_b*(v_b')*v_b+1/2*obj.J_s*(omega_b')*omega_b+obj.J_s*omega_frame^2;
             potential = obj.m_b*[0 obj.g 0]*obj.R(q(1))*obj.get_rho(q(2));
@@ -508,6 +559,15 @@ classdef butterfly_robot_phi_varphi
         function w = get_w(obj, riccati_sol, q, epsilon)
             w = -(1/obj.Gamma)*obj.B(q(2))'*riccati_sol*epsilon;
         end
+        function w = get_w_up(obj, riccati_sol, q, epsilon)
+            w = -(1/obj.Gamma)*obj.B_up(q(2))'*riccati_sol*epsilon;
+        end
+        function w = get_w_positive_dphi(obj, riccati_sol, q, epsilon)
+            w = -(1/obj.Gamma)*obj.B_positive_dphi(q(2))'*riccati_sol*epsilon;
+        end
+        function w = get_w_negative_dphi(obj, riccati_sol, q, epsilon)
+            w = -(1/obj.Gamma)*obj.B_negative_dphi(q(2))'*riccati_sol*epsilon;
+        end
         function out = riccati_times_epsilon(obj, q, epsilon)
             out = obj.function_for_X(mod(q(2),2*pi))*epsilon;
         end
@@ -521,7 +581,7 @@ classdef butterfly_robot_phi_varphi
             G = obj.get_G([obj.get_theta(q(2));q(2)]);
             denom = (L^-1)*(M^-1);
             numerator = L^-1*(N+(M^-1)*C*L*[epsilon(2);dq(2)]+(M^-1)*G)*1;
-            numerator = numerator(1)+obj.get_w(obj.function_for_X(q(2)),q, epsilon);
+            numerator = numerator(1)+obj.get_w_up(obj.function_for_X(q(2)),q, epsilon);
             u = numerator/denom(1,1);
         end
         function u = get_my_u(obj, q, dq, epsilon)
@@ -531,8 +591,39 @@ classdef butterfly_robot_phi_varphi
             k = [1 0]*M*[obj.get_dtheta(q(2));1]/([obj.get_dtheta(q(2)) 1]*M*[0;1]);
             u = k*([k^-1 -1]*M*[obj.get_w(obj.function_for_X(q(2)),q, epsilon)+obj.get_ddtheta(q(2))*dq(2)^2;0]+[k^-1 -1]*C*[(obj.get_dtheta(q(2)))*dq(2)+epsilon(2);dq(2)]+[k^-1 -1]*G);
         end
+        %%
+        function u = get_my_u_up(obj, q, dq, epsilon)
+            M = obj.get_M([obj.get_theta_up(q(2));q(2)]);
+            C = obj.get_C([obj.get_theta_up(q(2));q(2)],[obj.get_dtheta_up(q(2))*dq(2);dq(2)]);
+            G = obj.get_G([obj.get_theta_up(q(2));q(2)]);
+            k = [1 0]*M*[obj.get_dtheta_up(q(2));1]/([obj.get_dtheta_up(q(2)) 1]*M*[0;1]);
+            u = k*([k^-1 -1]*M*[obj.get_w_up(obj.function_for_X_up(q(2)),q, epsilon)+obj.get_ddtheta_up(q(2))*dq(2)^2;0]+[k^-1 -1]*C*[(obj.get_dtheta_up(q(2)))*dq(2)+epsilon(2);dq(2)]+[k^-1 -1]*G);
+        end
+        function u = get_my_u_positive_dphi(obj, q, dq, epsilon)
+            M = obj.get_M([obj.get_theta_center(q(2));q(2)]);
+            C = obj.get_C([obj.get_theta_center(q(2));q(2)],[obj.get_dtheta_center(q(2))*dq(2);dq(2)]);
+            G = obj.get_G([obj.get_theta_center(q(2));q(2)]);
+            k = [1 0]*M*[obj.get_dtheta_center(q(2));1]/([obj.get_dtheta_center(q(2)) 1]*M*[0;1]);
+            u = k*([k^-1 -1]*M*[obj.get_w_positive_dphi(obj.function_for_X_positive_dphi(q(2)),q, epsilon)+obj.get_ddtheta_center(q(2))*dq(2)^2;0]+[k^-1 -1]*C*[(obj.get_dtheta_center(q(2)))*dq(2)+epsilon(2);dq(2)]+[k^-1 -1]*G);
+        end
+        function u = get_my_u_negative_dphi(obj, q, dq, epsilon)
+            M = obj.get_M([obj.get_theta_center(q(2));q(2)]);
+            C = obj.get_C([obj.get_theta_center(q(2));q(2)],[obj.get_dtheta_center(q(2))*dq(2);dq(2)]);
+            G = obj.get_G([obj.get_theta_center(q(2));q(2)]);
+            k = [1 0]*M*[obj.get_dtheta_center(q(2));1]/([obj.get_dtheta_center(q(2)) 1]*M*[0;1]);
+            u = k*([k^-1 -1]*M*[obj.get_w_positive_dphi(obj.function_for_X_negative_dphi(q(2)),q, epsilon)+obj.get_ddtheta_center(q(2))*dq(2)^2;0]+[k^-1 -1]*C*[(obj.get_dtheta_center(q(2)))*dq(2)+epsilon(2);dq(2)]+[k^-1 -1]*G);
+        end
         function epsilon = get_epsilon(obj, q, dq)
             epsilon = [q(1)-obj.get_theta(q(2));dq(1)-obj.get_dtheta(q(2))*dq(2);dq(2)-obj.function_for_dphi(q(2))];
+        end
+        function epsilon = get_epsilon_up(obj, q, dq)
+            epsilon = [q(1)-obj.get_theta_up(q(2));dq(1)-obj.get_dtheta_up(q(2))*dq(2);dq(2)-obj.function_for_dphi_up(q(2))];
+        end
+        function epsilon = get_epsilon_positive_dphi(obj, q, dq)
+            epsilon = [q(1)-obj.get_theta_center(q(2));dq(1)-obj.get_dtheta_center(q(2))*dq(2);dq(2)-obj.function_for_positive_dphi(q(2))];
+        end
+        function epsilon = get_epsilon_negative_dphi(obj, q, dq)
+            epsilon = [q(1)-obj.get_theta_center(q(2));dq(1)-obj.get_dtheta_center(q(2))*dq(2);dq(2)+obj.function_for_positive_dphi(q(2))];
         end
         function plot_phase_plane(obj, x_0,x_end,y_0,y_end,title,time)
             a = @(x) obj.alpha_beta_gamma(x);
