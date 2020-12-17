@@ -1,0 +1,51 @@
+%implements s8_b0_95k9r_Start "C"
+
+%function Start(block, system) Output
+%assign cfgTxt = ""
+%openfile cfgTxt
+%assign localVarDecl = ""
+%assign tlcSetupRuntimeResourcesFcnOfS8B0 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 0, 0, 0, 0)
+%assign tlcSetupRuntimeResourcesFcnOfS8B8 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 8, 0, 0, 1)
+%assign tlcSetupRuntimeResourcesFcnOfS8B10 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 10, 0, 0, 2)
+%assign tlcSetupRuntimeResourcesFcnOfS8B12 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 12, 0, 0, 3)
+%assign tlcSetupRuntimeResourcesFcnOfS8B14 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 14, 0, 0, 4)
+%assign tlcSetupRuntimeResourcesFcnOfS8B15 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 15, 0, 0, 5)
+%assign tlcSetupRuntimeResourcesFcnOfS8B16 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 16, 0, 0, 6)
+%assign tlcSetupRuntimeResourcesFcnOfS8B17 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 17, 0, 0, 7)
+%assign tlcSetupRuntimeResourcesFcnOfS8B22 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 22, 0, 0, 8)
+%assign tlcSetupRuntimeResourcesFcnOfS8B23 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 23, 0, 0, 9)
+%assign tlcSetupRuntimeResourcesFcnOfS8B24 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 24, 0, 0, 10)
+%assign tlcSetupRuntimeResourcesFcnOfS8B25 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 25, 0, 0, 11)
+%assign tlcSetupRuntimeResourcesFcnOfS8B26 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 26, 0, 0, 12)
+%assign tlcSetupRuntimeResourcesFcnOfS8B27 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 27, 0, 0, 13)
+%assign tlcSetupRuntimeResourcesFcnOfS8B28 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 28, 0, 0, 14)
+%assign tlcSetupRuntimeResourcesFcnOfS8B31 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 31, 0, 0, 15)
+%assign tlcSetupRuntimeResourcesFcnOfS8B33 = OpaqueTLCBlockFcn("SetupRuntimeResources", 8, 33, 0, 0, 16)
+%<tlcSetupRuntimeResourcesFcnOfS8B0>\
+%<tlcSetupRuntimeResourcesFcnOfS8B8>\
+%<tlcSetupRuntimeResourcesFcnOfS8B10>\
+%<tlcSetupRuntimeResourcesFcnOfS8B12>\
+%<tlcSetupRuntimeResourcesFcnOfS8B14>\
+%<tlcSetupRuntimeResourcesFcnOfS8B15>\
+%<tlcSetupRuntimeResourcesFcnOfS8B16>\
+%<tlcSetupRuntimeResourcesFcnOfS8B17>\
+%<tlcSetupRuntimeResourcesFcnOfS8B22>\
+%<tlcSetupRuntimeResourcesFcnOfS8B23>\
+%<tlcSetupRuntimeResourcesFcnOfS8B24>\
+%<tlcSetupRuntimeResourcesFcnOfS8B25>\
+%<tlcSetupRuntimeResourcesFcnOfS8B26>\
+%<tlcSetupRuntimeResourcesFcnOfS8B27>\
+%<tlcSetupRuntimeResourcesFcnOfS8B28>\
+%<tlcSetupRuntimeResourcesFcnOfS8B31>\
+%<tlcSetupRuntimeResourcesFcnOfS8B33>\
+%closefile cfgTxt
+%<cfgTxt>
+%endfunction
+%function StartFcnProtoType(block, system) Output
+%assign fcnProtoType = ""
+%openfile fcnProtoType
+static void Start(\
+%assign comma = ""
+%closefile fcnProtoType
+%<SLibCG_SetFcnProtoType(0, 0, fcnProtoType)>
+%endfunction

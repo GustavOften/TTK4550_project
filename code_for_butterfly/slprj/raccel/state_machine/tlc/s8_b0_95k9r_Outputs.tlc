@@ -1,0 +1,245 @@
+%implements s8_b0_95k9r_Outputs "C"
+
+%function OutputsForTID(block, system, tid) Output
+%if tid == 0
+%assign ::GlobalCurrentTID = 0
+%<SLibCGIRAccessLocalVar(4, 0, "")> %% gscwjugm0i
+%<SLibCGIRAccessLocalVar(12, 0, "")> %% nnawcq1dk5
+%<SLibCGIRAccessLocalVar(14, 0, "")> %% b3g00oanw2
+%<SLibCGIRAccessLocalVar(15, 0, "")> %% er43z1a0h5
+%<SLibCGIRAccessLocalVar(0, 0, "")> %% fgwwgi30c1
+%<SLibCGIRAccessLocalVar(3, 0, "")> %% klb1p0zzox
+%<SLibCGIRAccessLocalVar(16, 0, "")> %% cjakzej1y5
+%assign cfgTxt = ""
+%openfile cfgTxt
+%assign localVarDecl = ""
+%openfile localVarDecl
+
+boolean_T gfn2oslji4;
+%closefile localVarDecl
+%assign tlcOutputsFcnOfS8B0 = OpaqueTLCBlockFcn("Outputs", 8, 0, 0, 2, 0)
+%assign tlcOutputsFcnOfS8B1 = OpaqueTLCBlockFcn("Outputs", 8, 1, 0, 2, 1)
+%assign tlcOutputsFcnOfS8B2 = OpaqueTLCBlockFcn("Outputs", 8, 2, 0, 2, 2)
+%assign tlcOutputsFcnOfS8B4 = OpaqueTLCBlockFcn("Outputs", 8, 4, 0, 2, 3)
+%assign tlcOutputsFcnOfS8B5 = OpaqueTLCBlockFcn("Outputs", 8, 5, 0, 2, 4)
+%assign tlcOutputsFcnOfS8B6 = OpaqueTLCBlockFcn("Outputs", 8, 6, 0, 2, 5)
+%assign tlcOutputsFcnOfS3B0 = OpaqueTLCBlockFcn("Outputs", 3, 0, 0, 2, 6)
+%assign tlcOutputsFcnOfS8B8 = OpaqueTLCBlockFcn("Outputs", 8, 8, 0, 2, 7)
+%assign tlcOutputsFcnOfS8B9 = OpaqueTLCBlockFcn("Outputs", 8, 9, 0, 2, 8)
+%assign tlcOutputsFcnOfS8B10 = OpaqueTLCBlockFcn("Outputs", 8, 10, 0, 2, 9)
+%assign tlcOutputsFcnOfS8B11 = OpaqueTLCBlockFcn("Outputs", 8, 11, 0, 2, 10)
+%assign tlcOutputsFcnOfS8B12 = OpaqueTLCBlockFcn("Outputs", 8, 12, 0, 2, 11)
+%assign tlcOutputsFcnOfS8B13 = OpaqueTLCBlockFcn("Outputs", 8, 13, 0, 2, 12)
+%assign tlcOutputsFcnOfS8B14 = OpaqueTLCBlockFcn("Outputs", 8, 14, 0, 2, 13)
+%assign tlcOutputsFcnOfS8B15 = OpaqueTLCBlockFcn("Outputs", 8, 15, 0, 2, 14)
+%assign tlcOutputsFcnOfS8B16 = OpaqueTLCBlockFcn("Outputs", 8, 16, 0, 2, 15)
+%assign tlcOutputsFcnOfS8B17 = OpaqueTLCBlockFcn("Outputs", 8, 17, 0, 2, 16)
+%assign tlcOutputsFcnOfS8B20 = OpaqueTLCBlockFcn("Outputs", 8, 20, 0, 2, 17)
+%assign tlcOutputsFcnOfS8B22 = OpaqueTLCBlockFcn("Outputs", 8, 22, 0, 2, 18)
+%assign tlcOutputsFcnOfS8B23 = OpaqueTLCBlockFcn("Outputs", 8, 23, 0, 2, 19)
+%assign tlcOutputsFcnOfS8B24 = OpaqueTLCBlockFcn("Outputs", 8, 24, 0, 2, 20)
+%assign tlcOutputsFcnOfS8B25 = OpaqueTLCBlockFcn("Outputs", 8, 25, 0, 2, 21)
+%assign tlcOutputsFcnOfS8B26 = OpaqueTLCBlockFcn("Outputs", 8, 26, 0, 2, 22)
+%assign tlcOutputsFcnOfS8B27 = OpaqueTLCBlockFcn("Outputs", 8, 27, 0, 2, 23)
+%assign tlcOutputsFcnOfS8B28 = OpaqueTLCBlockFcn("Outputs", 8, 28, 0, 2, 24)
+%assign tlcOutputsFcnOfS0B0 = OpaqueTLCBlockFcn("Outputs", 0, 0, 0, 2, 25)
+%assign tlcOutputsFcnOfS1B0 = OpaqueTLCBlockFcn("Outputs", 1, 0, 0, 2, 26)
+%assign tlcOutputsFcnOfS8B31 = OpaqueTLCBlockFcn("Outputs", 8, 31, 0, 2, 27)
+%assign tlcOutputsFcnOfS8B33 = OpaqueTLCBlockFcn("Outputs", 8, 33, 0, 2, 28)
+%assign tlcOutputsFcnOfS8B34 = OpaqueTLCBlockFcn("Outputs", 8, 34, 0, 2, 29)
+%assign tlcOutputsFcnOfS8B35 = OpaqueTLCBlockFcn("Outputs", 8, 35, 0, 2, 30)
+%<SLibGetRootInportsFromFile(system, TLC_FALSE)>
+%<SLibGenerateExtModeOutput(system)>
+rtB.aimpallq55[0] = rtX.hhsuro25fw[0];
+rtB.aimpallq55[1] = rtX.hhsuro25fw[1];
+%<tlcOutputsFcnOfS8B0>\
+rtB.nw03xqxcsk[0] = rtX.egar5vqjas[0];
+rtB.nw03xqxcsk[1] = rtX.egar5vqjas[1];
+%<tlcOutputsFcnOfS8B1>\
+%<tlcOutputsFcnOfS8B2>\
+if (%<(SLibCGIRIsSampleHit(2, 8))>) {
+    if ((rtB.nw03xqxcsk[1] <= 0.01) && (rtB.aimpallq55[1] > 2.0)) {
+        rtDW.cmzrukzjdo = -1.0;
+    }
+    if ((rtB.nw03xqxcsk[1] >= -0.01) && (rtB.aimpallq55[1] < 1.2)) {
+        rtDW.cmzrukzjdo = 1.0;
+    }
+    rtB.cxn1xrpqs2 = rtDW.cmzrukzjdo;
+}
+%<tlcOutputsFcnOfS8B4>\
+%<tlcOutputsFcnOfS8B5>\
+if (rtB.cxn1xrpqs2 > rtP.Switch1_Threshold) {
+    rtB.fnkkqew0h1 = rtB.ev1h1kecuf;
+} else {
+    rtB.fnkkqew0h1 = rtB.m0ejplxcfr;
+}
+if (%<(SLibCGIRIsSampleHit(1, 8))>) {
+    if (%<(LibIsMajorTimeStep())>) {
+        rtDW.ozu3hv1pgc = (rtB.aimpallq55[1] > rtP.CompareToConstant_const);
+    }
+    rtB.dd2ld03uiz = (rtDW.im2uywdcj5 || rtDW.ozu3hv1pgc);
+}
+%<tlcOutputsFcnOfS8B6>\
+if (rtB.dd2ld03uiz) {
+    rtB.hmd5pe44gr = rtB.fnkkqew0h1;
+} else {
+%<tlcOutputsFcnOfS3B0>\
+    rtB.hmd5pe44gr = nnawcq1dk5;
+}
+if (rtP.ManualSwitch_CurrentSetting == 1) {
+    rtB.j0dwieytpr = rtB.hmd5pe44gr;
+} else {
+    rtB.j0dwieytpr = rtP.Constant5_Value;
+}
+%<tlcOutputsFcnOfS8B8>\
+%<tlcOutputsFcnOfS8B9>\
+rtB.hgihsxl3us = rtB.g2rdhqaj3s;
+%<tlcOutputsFcnOfS8B10>\
+if (%<(SLibCGIRIsSampleHit(1, 8))>) {
+    gfn2oslji4 = rtDW.g445v1e0ih;
+}
+%<tlcOutputsFcnOfS8B11>\
+if (%<(SLibCGIRIsSampleHit(1, 8))>) {
+    if (%<(LibIsMajorTimeStep())>) {
+        rtDW.l2ejyhrqxv = (rtB.axrbecpkui < rtP.CompareToConstant_const_er3nxyy22c);
+    }
+    rtB.hlvdgu1ooi = (gfn2oslji4 || rtDW.l2ejyhrqxv);
+}
+if (rtB.hlvdgu1ooi) {
+    rtB.ouhmfo2a1u[0] = 0.0;
+    rtB.ouhmfo2a1u[1] = 0.0;
+} else {
+    rtB.ouhmfo2a1u[0] = rtB.aimpallq55[0];
+    rtB.ouhmfo2a1u[1] = rtB.aimpallq55[1];
+}
+%<tlcOutputsFcnOfS8B12>\
+%<tlcOutputsFcnOfS8B13>\
+rtB.lsbxq0izd3[0] = rtB.aimpallq55[0];
+rtB.lsbxq0izd3[1] = cjakzej1y5[0];
+rtB.lsbxq0izd3[2] = cjakzej1y5[1];
+if (%<(LibIsMajorTimeStep())>) {
+    gfn2oslji4 = (rtB.hlvdgu1ooi && (rtPrevZCX.jh5ocp1mkd != POS_ZCSIG));
+    rtPrevZCX.jh5ocp1mkd = rtB.hlvdgu1ooi;
+    /* evaluate zero-crossings */
+    if (gfn2oslji4 || (rtDW.bymj4nlnqh != 0)) {
+        rtX.ajqegnjzag[0] = rtB.lsbxq0izd3[0];
+        rtX.ajqegnjzag[1] = rtB.lsbxq0izd3[1];
+        rtX.ajqegnjzag[2] = rtB.lsbxq0izd3[2];
+        %<(RTMSetBlockStateForSolverChangedAtMajorStep())>;
+    }
+}
+rtB.kuipktkyok[0] = rtX.ajqegnjzag[0];
+if (rtB.hlvdgu1ooi) {
+    rtB.dhfxaeu2ox[0] = rtB.kuipktkyok[0];
+} else {
+    rtB.dhfxaeu2ox[0] = 0.0;
+}
+rtB.kuipktkyok[1] = rtX.ajqegnjzag[1];
+if (rtB.hlvdgu1ooi) {
+    rtB.dhfxaeu2ox[1] = rtB.kuipktkyok[1];
+} else {
+    rtB.dhfxaeu2ox[1] = 0.0;
+}
+rtB.kuipktkyok[2] = rtX.ajqegnjzag[2];
+if (rtB.hlvdgu1ooi) {
+    rtB.dhfxaeu2ox[2] = rtB.kuipktkyok[2];
+} else {
+    rtB.dhfxaeu2ox[2] = 0.0;
+}
+%<tlcOutputsFcnOfS8B14>\
+%<tlcOutputsFcnOfS8B15>\
+%<tlcOutputsFcnOfS8B16>\
+%<tlcOutputsFcnOfS8B17>\
+gscwjugm0i = muDoubleScalarMod(rtB.aimpallq55[1], rtP.Constant6_Value);
+%<tlcOutputsFcnOfS8B20>\
+%<tlcOutputsFcnOfS8B22>\
+if (%<(SLibCGIRIsSampleHit(2, 8))>) {
+%<tlcOutputsFcnOfS8B23>\
+}
+%<tlcOutputsFcnOfS8B24>\
+%<tlcOutputsFcnOfS8B25>\
+%<tlcOutputsFcnOfS8B26>\
+%<tlcOutputsFcnOfS8B27>\
+if (%<(SLibCGIRIsSampleHit(1, 8))>) {
+%<tlcOutputsFcnOfS8B28>\
+}
+if (rtB.dd2ld03uiz) {
+%<tlcOutputsFcnOfS1B0>\
+    rtB.c3cu5ruify = b3g00oanw2;
+} else {
+%<tlcOutputsFcnOfS0B0>\
+    rtB.c3cu5ruify = er43z1a0h5;
+}
+%<tlcOutputsFcnOfS8B31>\
+if (rtB.dd2ld03uiz) {
+    if (rtB.cxn1xrpqs2 > rtP.Switch3_Threshold) {
+        rtB.cdo1mytz15 = fgwwgi30c1;
+    } else {
+        rtB.cdo1mytz15 = klb1p0zzox;
+    }
+} else {
+    rtB.cdo1mytz15 = rtB.ga50iy3ws2;
+}
+%<tlcOutputsFcnOfS8B33>\
+%<tlcOutputsFcnOfS8B34>\
+rtB.jilh5ut3dt[0] = rtB.nw03xqxcsk[0];
+rtB.jilh5ut3dt[1] = cjakzej1y5[0];
+rtB.jilh5ut3dt[2] = cjakzej1y5[1];
+if (%<(LibIsMajorTimeStep())>) {
+    gfn2oslji4 = (rtB.hlvdgu1ooi && (rtPrevZCX.kdmk0p35t1 != POS_ZCSIG));
+    rtPrevZCX.kdmk0p35t1 = rtB.hlvdgu1ooi;
+    /* evaluate zero-crossings */
+    if (gfn2oslji4 || (rtDW.c44p4ahvna != 0)) {
+        rtX.je33cshzll[0] = rtB.jilh5ut3dt[0];
+        rtX.je33cshzll[1] = rtB.jilh5ut3dt[1];
+        rtX.je33cshzll[2] = rtB.jilh5ut3dt[2];
+        %<(RTMSetBlockStateForSolverChangedAtMajorStep())>;
+    }
+}
+rtB.oj24c5ghtm[0] = rtX.je33cshzll[0];
+rtB.oj24c5ghtm[1] = rtX.je33cshzll[1];
+rtB.oj24c5ghtm[2] = rtX.je33cshzll[2];
+if (rtB.hlvdgu1ooi) {
+    rtB.cssnol2lmg[0] = rtP.Constant4_Value;
+    rtB.cssnol2lmg[2] = rtP.Constant4_Value;
+    rtB.cssnol2lmg[1] = rtP.Constant4_Value;
+    rtB.cssnol2lmg[3] = rtP.Constant4_Value;
+    rtB.cssnol2lmg[4] = rtP.Constant4_Value;
+} else {
+    rtB.cssnol2lmg[0] = rtB.aimpallq55[0];
+    rtB.cssnol2lmg[2] = rtB.nw03xqxcsk[0];
+    rtB.cssnol2lmg[1] = rtB.aimpallq55[1];
+    rtB.cssnol2lmg[3] = rtB.nw03xqxcsk[1];
+    rtB.cssnol2lmg[4] = rtB.j0dwieytpr;
+}
+%<tlcOutputsFcnOfS8B35>\
+rtB.fggek2ecsg[0] = rtB.nw03xqxcsk[0];
+rtB.fggek2ecsg[1] = %<(SLibCG_SE(SLibCG_Grnd(0, 0, 1, "", -1, "", 0)))>;
+rtB.fggek2ecsg[2] = rtP.Constant_Value_lu2pbheprv;
+%<SLibInsertSolverResetCode()>\
+%closefile cfgTxt
+%<cfgTxt>
+%<LibSetSystemField(system, "CachedOutputLocalVars", localVarDecl)>
+%assign ::GlobalCurrentTID = []
+%endif
+%if tid == 3
+%assign ::GlobalCurrentTID = 3
+%assign ::GlobalCurrentTID = []
+%endif
+%endfunction
+%function OutputsFcnProtoTypeForTID(block, system, tid) Output
+%if tid == 0
+%assign ::GlobalCurrentTID = 0
+%assign fcnProtoType = ""
+%openfile fcnProtoType
+static void Outputs0(\
+%assign comma = ""
+%closefile fcnProtoType
+%<SLibCG_SetFcnProtoType(0, 2, fcnProtoType)>
+%assign ::GlobalCurrentTID = []
+%endif
+%if tid == 3
+%assign ::GlobalCurrentTID = 3
+%assign ::GlobalCurrentTID = []
+%endif
+%endfunction

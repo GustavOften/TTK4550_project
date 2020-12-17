@@ -1,0 +1,31 @@
+%implements s8_b0_95k9r_Terminate "C"
+
+%function Terminate(block, system) Output
+%assign cfgTxt = ""
+%openfile cfgTxt
+%assign localVarDecl = ""
+%assign tlcTerminateFcnOfS8B12 = OpaqueTLCBlockFcn("Terminate", 8, 12, 0, 7, 0)
+%assign tlcTerminateFcnOfS8B14 = OpaqueTLCBlockFcn("Terminate", 8, 14, 0, 7, 1)
+%assign tlcTerminateFcnOfS8B15 = OpaqueTLCBlockFcn("Terminate", 8, 15, 0, 7, 2)
+%assign tlcTerminateFcnOfS8B16 = OpaqueTLCBlockFcn("Terminate", 8, 16, 0, 7, 3)
+%assign tlcTerminateFcnOfS8B17 = OpaqueTLCBlockFcn("Terminate", 8, 17, 0, 7, 4)
+%assign tlcTerminateFcnOfS8B31 = OpaqueTLCBlockFcn("Terminate", 8, 31, 0, 7, 5)
+%assign tlcTerminateFcnOfS8B33 = OpaqueTLCBlockFcn("Terminate", 8, 33, 0, 7, 6)
+%<tlcTerminateFcnOfS8B12>\
+%<tlcTerminateFcnOfS8B14>\
+%<tlcTerminateFcnOfS8B15>\
+%<tlcTerminateFcnOfS8B16>\
+%<tlcTerminateFcnOfS8B17>\
+%<tlcTerminateFcnOfS8B31>\
+%<tlcTerminateFcnOfS8B33>\
+%closefile cfgTxt
+%<cfgTxt>
+%endfunction
+%function TerminateFcnProtoType(block, system) Output
+%assign fcnProtoType = ""
+%openfile fcnProtoType
+static void Terminate(\
+%assign comma = ""
+%closefile fcnProtoType
+%<SLibCG_SetFcnProtoType(0, 7, fcnProtoType)>
+%endfunction
